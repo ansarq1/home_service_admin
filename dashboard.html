@@ -3,70 +3,179 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="styles/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <title>Admin Dashboard</title>
 </head>
 <body>
   <div class="dashboard-container">
     <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="logo-container">
-        <img src="resources/images/logo.png" alt="PaRepair Logo">
-        <h2>PaRepair Admin</h2>
-      </div>
-      <nav class="sidebar-menu">
-        <ul>
-          <li><a href="#dashboard">Dashboard</a></li>
-          <li><a href="#appointments">Appointments</a></li>
-          <li><a href="#users">Users</a></li>
-          <li><a href="#settings">Settings</a></li>
-          <li><a href="#reports">Reports</a></li>
-          <li><a href="#logout">Logout</a></li>
-        </ul>
-      </nav>
+    <aside class="sidebar" id="sidebar">
+        <div class="logo-container">
+            <img src="resources/images/logo.png" alt="PaRepair Logo">
+            <h2>PaRepair Admin</h2>
+        </div>
+        <button class="toggle-btn" id="toggle-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <hr class="divider">
+        <nav class="sidebar-menu">
+            <ul>
+                <li><a href="#dashboard"><i class="fas fa-tachometer-alt"></i><span> Dashboard</span></a></li>
+                <li><a href="#appointments"><i class="fas fa-calendar-check"></i><span> Appointments</span></a></li>
+                <li><a href="#users"><i class="fas fa-users"></i><span> Users</span></a></li>
+                <li><a href="#settings"><i class="fas fa-cog"></i><span> Settings</span></a></li>
+                <li><a href="#reports"><i class="fas fa-chart-line"></i><span> Reports</span></a></li>
+                <li><a href="#logout"><i class="fas fa-sign-out-alt"></i><span> Logout</span></a></li>
+            </ul>
+        </nav>
     </aside>
-
+    
     <!-- Main Content -->
     <main class="main-content">
-      <header class="dashboard-header">
-        <h1>Welcome to the Admin Dashboard</h1>
-      </header>
+        <header class="dashboard-header">
+          <div class="welcome-message">
+            <h1>Welcome, Admin!</h1>
+            <p>Here’s an overview of your dashboard</p>
+          </div>
+          <div class="header-right">    
+            <input type="text" placeholder="Search..." class="search-bar">
+            <div class="profile">
+              <img src="resources/images/logo.png" alt="Admin Profile">
+            </div>
+          </div>
+        </header>
 
-      <section id="dashboard">
-        <h2>Overview</h2>
-        <p>This is the main dashboard area where you can view an overview of the system.</p>
-      </section>
+        <section class="card-container">
+            <div class="user-card">
+              <i class="fas fa-users user-icon"></i>
+              <div class="card-content">
+                <h2>Total Users</h2>
+                <p id="userCount">0</p> <!-- Placeholder for user count -->
+              </div>
+            </div>
+            <div class="user-card">
+                <i class="fas fa-calendar-check user-icon"></i>
+                <div class="card-content">
+                  <h2>Pending Appointments</h2>
+                  <p id="appointmentCount">0</p> <!-- Placeholder for appointment count -->
+                </div>
+              </div>
+              <div class="user-card">
+                <i class="fas fa-file-invoice user-icon"></i>
+                <div class="card-content">
+                  <h2>Reports</h2>
+                  <p id="reportCount">0</p> <!-- Placeholder for report count -->
+                </div>
+              </div>
+              <div class="user-card">
+                <i class="fas fa-tools user-icon"></i>
+                <div class="card-content">
+                  <h2>Services Available</h2>
+                  <p id="serviceCount">0</p> <!-- Placeholder for service count -->
+                </div>
+              </div>
+        </section>
 
-      <section id="appointments">
-        <h2>Appointments</h2>
-        <p>Manage appointments here.</p>
-      </section>
+        <!-- Table -->
+        <section class="table-container">
+          <h2>Recent Appointments</h2>
+          <table class="appointments-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Client Name</th>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>John Doe</td>
+                <td>Repair</td>
+                <td>2024-10-30</td>
+                <td>Pending</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Jane Smith</td>
+                <td>Maintenance</td>
+                <td>2024-10-31</td>
+                <td>Completed</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Michael Johnson</td>
+                <td>Installation</td>
+                <td>2024-11-01</td>
+                <td>Pending</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Emily Davis</td>
+                <td>Repair</td>
+                <td>2024-11-02</td>
+                <td>Completed</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
-      <section id="users">
-        <h2>Users</h2>
-        <p>View and manage users here.</p>
-      </section>
+         <!-- Chart -->
 
-      <section id="settings">
-        <h2>Settings</h2>
-        <p>Update system settings here.</p>
-      </section>
-
-      <section id="reports">
-        <h2>Reports</h2>
-        <p>View reports here.</p>
-      </section>
+         <div class="chart-container">
+            <h2>User Statistics</h2>
+            <canvas id="myChart"></canvas>
+        </div>
+        
     </main>
   </div>
 
+  
+
   <script src="resources/js/dashboard.js"></script>
   <script>
-    document.querySelectorAll('.sidebar-menu a').forEach(link => {
-  link.addEventListener('click', function() {
-    document.querySelectorAll('.sidebar-menu a').forEach(link => link.classList.remove('active'));
-    this.classList.add('active');
-  });
+    document.addEventListener('DOMContentLoaded', () => {
+      // Replace this number with an actual count from your backend or Firebase
+      const totalUsers = 123; 
+      document.getElementById('userCount').textContent = totalUsers;
+
+      // Sample counts for other cards
+      document.getElementById('appointmentCount').textContent = 5;
+      document.getElementById('reportCount').textContent = 10;
+      document.getElementById('serviceCount').textContent = 8;
+    });
+
+    document.getElementById('toggle-btn').addEventListener('click', () => {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('collapsed');
+    });
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+const myChart = new Chart(ctx, {
+    type: 'bar', // Change this to 'line', 'pie', etc. for different chart types
+    data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: [{
+            label: 'Users Registered',
+            data: [65, 59, 80, 81, 56, 55, 40], // Sample data
+            backgroundColor: 'rgba(76, 175, 80, 0.5)',
+            borderColor: 'rgba(76, 175, 80, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
 });
+
   </script>
 </body>
 </html>
