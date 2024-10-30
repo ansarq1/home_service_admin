@@ -52,28 +52,28 @@
               <i class="fas fa-users user-icon"></i>
               <div class="card-content">
                 <h2>Total Users</h2>
-                <p id="userCount">0</p> <!-- Placeholder for user count -->
+                <p id="userCount">0</p> 
               </div>
             </div>
             <div class="user-card">
                 <i class="fas fa-calendar-check user-icon"></i>
                 <div class="card-content">
                   <h2>Pending Appointments</h2>
-                  <p id="appointmentCount">0</p> <!-- Placeholder for appointment count -->
+                  <p id="appointmentCount">0</p> 
                 </div>
               </div>
               <div class="user-card">
                 <i class="fas fa-file-invoice user-icon"></i>
                 <div class="card-content">
                   <h2>Reports</h2>
-                  <p id="reportCount">0</p> <!-- Placeholder for report count -->
+                  <p id="reportCount">0</p> 
                 </div>
               </div>
               <div class="user-card">
                 <i class="fas fa-tools user-icon"></i>
                 <div class="card-content">
                   <h2>Services Available</h2>
-                  <p id="serviceCount">0</p> <!-- Placeholder for service count -->
+                  <p id="serviceCount">0</p> 
                 </div>
               </div>
         </section>
@@ -139,7 +139,6 @@
   <script src="resources/js/dashboard.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Replace this number with an actual count from your backend or Firebase
       const totalUsers = 123; 
       document.getElementById('userCount').textContent = totalUsers;
 
@@ -156,7 +155,7 @@
 
     const ctx = document.getElementById('myChart').getContext('2d');
 const myChart = new Chart(ctx, {
-    type: 'bar', // Change this to 'line', 'pie', etc. for different chart types
+    type: 'bar',
     data: {
         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
         datasets: [{

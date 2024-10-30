@@ -106,13 +106,13 @@
   }
   
   .sidebar-menu a.active {
-    background-color: #1abc9c; /* Highlight color for active link */
+    background-color: #1abc9c; 
     border-radius: 5px;
   }
   
   /* Sidebar Collapsed State */
   .sidebar.collapsed {
-    width: 70px; /* Width for collapsed sidebar */
+    width: 70px;
   }
   
   .sidebar.collapsed .sidebar-menu a {
@@ -120,11 +120,11 @@
   }
   
   .sidebar.collapsed .sidebar-menu a span {
-    display: none; /* Hide menu text in collapsed mode */
+    display: none;
   }
   
   .sidebar.collapsed .logo-container h2 {
-    display: none; /* Hide logo text when collapsed */
+    display: none; 
   }
   
   /* Toggle Button Styling */
@@ -136,7 +136,7 @@
     cursor: pointer;
     position: absolute;
     top: 10px;
-    right: 10px; /* Position to the right */
+    right: 10px;
   }
   
   /* Main Content Styling */
@@ -206,7 +206,7 @@
   /* Card Container Styling */
   .card-container {
     display: flex;
-    margin-top: 2px; /* Space below the header */
+    margin-top: 2px; 
     gap: 20px;
   }
   
@@ -316,7 +316,7 @@
   
   .card-container {
     display: flex;
-    margin-top: 2px; /* Space below the header */
+    margin-top: 2px; 
     gap: 20px;
   }
   
@@ -423,9 +423,9 @@ tr:hover {
 }
 
 canvas {
-    max-width: 100%; /* Ensure it doesn't exceed container width */
-    height: auto; /* Maintain aspect ratio */
-    width: 100%; /* Set width to 100% of the container */
+    max-width: 100%; 
+    height: auto; 
+    width: 100%; 
 }
 
 
