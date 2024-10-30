@@ -146,7 +146,7 @@ body{
 }
 
 #loading-overlay {
-  display: none; 
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -158,10 +158,9 @@ body{
   z-index: 1000;
 }
 
-
 .loader {
-  border: 8px solid #f3f3f3; 
-  border-top: 8px solid #3498db; 
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
   border-radius: 50%;
   width: 60px;
   height: 60px;
