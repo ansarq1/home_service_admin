@@ -32,6 +32,53 @@
             </div>
         </div>
     </div>
+
+    <div id="loading-overlay">
+        <div class="loader"></div>
+    </div>
+
     <script src="resources/js/index.js"></script>
+    <script type="module">
+
+      import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyBHJ025X5bX0-nhwvbq5CTNxCtRyvGYJE4",
+        authDomain: "parepair-63325.firebaseapp.com",
+        projectId: "parepair-63325",
+        storageBucket: "parepair-63325.appspot.com",
+        messagingSenderId: "269243614085",
+        appId: "1:269243614085:web:af243ba37f8f12f2d1faec"
+      };
+
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+
+      document.querySelector("button").addEventListener("click", async () => {
+        const email = document.querySelector("input[type='text']").value;
+        const password = document.querySelector("#password-input").value;
+
+        try {
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          console.log("Signed in successfully with UID:", userCredential.user.uid);
+
+          
+          document.getElementById("loading-overlay").style.display = "flex";
+
+          
+          setTimeout(() => {
+            window.location.href = "dashboard.html"; 
+          }, 1000); 
+
+        } catch (error) {
+          console.error("Error signing in:", error.message);
+          alert("Failed to sign in. Please check your credentials.");
+        }
+      });
+    </script>
 </body>
 </html>
