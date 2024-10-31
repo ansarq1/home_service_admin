@@ -27,7 +27,7 @@
                 <li><a href="#users"><i class="fas fa-users"></i><span> Users</span></a></li>
                 <li><a href="#settings"><i class="fas fa-cog"></i><span> Settings</span></a></li>
                 <li><a href="#reports"><i class="fas fa-chart-line"></i><span> Reports</span></a></li>
-                <li><a href="#logout"><i class="fas fa-sign-out-alt"></i><span> Logout</span></a></li>
+                <li><a id="logout-button"><i class="fas fa-sign-out-alt"></i><span> Logout</span></a></li>
             </ul>
         </nav>
     </aside>
@@ -82,47 +82,21 @@
         <section class="table-container">
           <h2>Recent Appointments</h2>
           <table class="appointments-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Client Name</th>
-                <th>Service</th>
-                <th>Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>John Doe</td>
-                <td>Repair</td>
-                <td>2024-10-30</td>
-                <td>Pending</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Jane Smith</td>
-                <td>Maintenance</td>
-                <td>2024-10-31</td>
-                <td>Completed</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Michael Johnson</td>
-                <td>Installation</td>
-                <td>2024-11-01</td>
-                <td>Pending</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>Emily Davis</td>
-                <td>Repair</td>
-                <td>2024-11-02</td>
-                <td>Completed</td>
-              </tr>
-            </tbody>
+              <thead>
+                  <tr>
+                      <th>#</th>
+                      <th>Client Name</th>
+                      <th>Service Provider</th>
+                      <th>Date</th>
+                      <th>Time</th>
+                      <th>Status</th>
+                  </tr>
+              </thead>
+              <tbody id="appointments-tbody">
+              </tbody>
           </table>
-        </section>
+      </section>
+      
 
          <!-- Chart -->
 
@@ -137,44 +111,115 @@
   
 
   <script src="resources/js/dashboard.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const totalUsers = 123; 
-      document.getElementById('userCount').textContent = totalUsers;
-
-      // Sample counts for other cards
-      document.getElementById('appointmentCount').textContent = 5;
-      document.getElementById('reportCount').textContent = 10;
-      document.getElementById('serviceCount').textContent = 8;
-    });
-
-    document.getElementById('toggle-btn').addEventListener('click', () => {
-      const sidebar = document.getElementById('sidebar');
-      sidebar.classList.toggle('collapsed');
-    });
-
-    const ctx = document.getElementById('myChart').getContext('2d');
-const myChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [{
-            label: 'Users Registered',
-            data: [65, 59, 80, 81, 56, 55, 40], // Sample data
-            backgroundColor: 'rgba(76, 175, 80, 0.5)',
-            borderColor: 'rgba(76, 175, 80, 1)',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
+  <script src="chart.js"></script>
+  <script type="module">
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHJ025X5bX0-nhwvbq5CTNxCtRyvGYJE4",
+      authDomain: "parepair-63325.firebaseapp.com",
+      projectId: "parepair-63325",
+      storageBucket: "parepair-63325.appspot.com",
+      messagingSenderId: "269243614085",
+      appId: "1:269243614085:web:af243ba37f8f12f2d1faec"
+    };
+  
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app); // Initialize Firestore
+  
+    // Function to count total users
+    async function countTotalUsers() {
+      try {
+        const userCollection = collection(db, "users"); // Reference to the 'users' collection
+        const userSnapshot = await getDocs(userCollection); // Get all documents in the collection
+        const userCount = userSnapshot.size; // Count the number of documents
+        document.getElementById("userCount").textContent = userCount; // Update the user count in the HTML
+      } catch (error) {
+        console.error("Error counting users:", error.message);
+      }
     }
-});
+  
+    // Function to fetch user data based on UID
+    async function fetchUserData(userId) {
+      try {
+        const userDocRef = doc(db, "users", userId);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          document.getElementById("user-data").innerHTML = `<p>User Data: ${JSON.stringify(userDoc.data())}</p>`;
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error retrieving data from Firestore:", error.message);
+      }
+    }
+  
+    // Function to write or update user data
+    async function writeUserData(userId, data) {
+      try {
+        const userDocRef = doc(db, "users", userId);
+        await setDoc(userDocRef, data, { merge: true }); // Merge to avoid overwriting existing data
+        console.log("User data written successfully");
+      } catch (error) {
+        console.error("Error writing data to Firestore:", error.message);
+      }
+    }
+  
+   // Function to fetch appointments and populate the table
+async function fetchAppointments() {
+  try {
+    const appointmentsCollection = collection(db, "appointments"); // Reference to the 'appointments' collection
+    const appointmentsSnapshot = await getDocs(appointmentsCollection); // Get all documents in the collection
 
+    const appointmentsTbody = document.getElementById("appointments-tbody");
+    appointmentsTbody.innerHTML = ""; // Clear previous data
+
+    let rowCount = 1; // Initialize the counter for row numbers
+
+    appointmentsSnapshot.forEach((doc) => {
+      const appointment = doc.data(); // Get the data for each appointment
+      const row = document.createElement("tr"); // Create a new row for each appointment
+      row.innerHTML = `
+        <td>${rowCount++}</td> <!-- Increment the counter -->
+        <td>${appointment.clientFullName}</td>
+        <td>${appointment.serviceProviderJob}</td>
+        <td>${appointment.selectedDate}</td>
+        <td>${appointment.selectedTime}</td>
+        <td>${appointment.bookingStatus}</td>
+      `;
+      appointmentsTbody.appendChild(row); // Append the row to the table body
+    });
+  } catch (error) {
+    console.error("Error fetching appointments:", error.message);
+  }
+}
+
+    // Check if user is logged in and fetch their data
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        const userId = user.uid;
+        fetchUserData(userId); // Fetch user data
+        countTotalUsers(); // Count total users
+        fetchAppointments(); // Fetch appointments data and populate the table
+  
+        // Example: Write user data (this could be called based on some user action)
+        writeUserData(userId, { lastLogin: new Date().toISOString() });
+      } else {
+        // No user is signed in, redirect to login
+        window.location.href = "index.html";
+      }
+    });
+  
+    // Log out function
+    document.getElementById("logout-button").addEventListener("click", async () => {
+      await signOut(auth);
+      sessionStorage.removeItem("isLoggedIn");
+      window.location.href = "index.html";
+    });
   </script>
 </body>
 </html>

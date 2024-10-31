@@ -1,83 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles/styles.css">
-    <link rel="shortcut icon" href="resources/images/logo.png" type="image/x-icon">
-    <title>Admin | Login</title>
-</head>
-<body>
-    <div class="container">
-        <div class="icon-container">
-            <img src="resources/images/logo.png" alt="PaRepair Icon">
-            <h1>Pa<span>Repair</span></h1>
-        </div>
-        <div class="sign-in-container">
-            <h1>Sign In</h1>
-            <div class="input-container">
-                <div class="email-container">
-                    <label for="email">Email</label>
-                    <input type="text" placeholder="Enter your email">
-                </div>
-                <div class="password-container">
-                    <label for="password">Password</label>
-                    <input type="password" placeholder="Enter your password" id="password-input">
-                    <span class="suffix" id="suffix-icon-show"><img src="resources/images/view.png" alt="view"></span>
-                    <span class="suffix" id="suffix-icon-hide"><img src="resources/images/hide.png" alt="view"></span>
-                </div>
-            </div>
-            <div class="button-container">
-                <button>Sign In</button>
-            </div>
-        </div>
-    </div>
-    <div id="loading-overlay">
-        <div class="loader"></div>
-    </div>
-    <script src="resources/js/index.js"></script>
-    <script type="module">
-      import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-
-      const firebaseConfig = {
-        apiKey: "AIzaSyBHJ025X5bX0-nhwvbq5CTNxCtRyvGYJE4",
-        authDomain: "parepair-63325.firebaseapp.com",
-        projectId: "parepair-63325",
-        storageBucket: "parepair-63325.appspot.com",
-        messagingSenderId: "269243614085",
-        appId: "1:269243614085:web:af243ba37f8f12f2d1faec"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-
-      document.querySelector("button").addEventListener("click", async () => {
-        const email = document.querySelector("input[type='text']").value;
-        const password = document.querySelector("#password-input").value;
-
-        try {
-          const userCredential = await signInWithEmailAndPassword(auth, email, password);
-          console.log("Signed in successfully with UID:", userCredential.user.uid);
-          document.getElementById("loading-overlay").style.display = "flex";
-          setTimeout(() => {
-            sessionStorage.setItem("isLoggedIn", "true");
-            window.location.replace("dashboard.html");
-          }, 1000);
-        } catch (error) {
-          console.error("Error signing in:", error.message);
-          alert("Failed to sign in. Please check your credentials.");
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="styles/styles.css">
+      <link rel="shortcut icon" href="resources/images/logo.png" type="image/x-icon">
+      <title>Admin | Login</title>
+  </head>
+  <body>
+      <div class="container">
+          <div class="icon-container">
+              <img src="resources/images/logo.png" alt="PaRepair Icon">
+              <h1>Pa<span>Repair</span></h1>
+          </div>
+          <div class="sign-in-container">
+              <h1>Sign In</h1>
+              <div class="input-container">
+                  <div class="email-container">
+                      <label for="email">Email</label>
+                      <input type="text" placeholder="Enter your email">
+                  </div>
+                  <div class="password-container">
+                      <label for="password">Password</label>
+                      <input type="password" placeholder="Enter your password" id="password-input">
+                      <span class="suffix" id="suffix-icon-show"><img src="resources/images/view.png" alt="view"></span>
+                      <span class="suffix" id="suffix-icon-hide"><img src="resources/images/hide.png" alt="view"></span>
+                  </div>
+              </div>
+              <div class="button-container">
+                  <button>Sign In</button>
+              </div>
+          </div>
+      </div>
+      <div id="loading-overlay">
+          <div class="loader"></div>
+      </div>
+      <script src="resources/js/index.js"></script>
+      <script type="module">
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+      
+        // Firebase configuration and initialization
+        const firebaseConfig = {
+          apiKey: "AIzaSyBHJ025X5bX0-nhwvbq5CTNxCtRyvGYJE4",
+          authDomain: "parepair-63325.firebaseapp.com",
+          projectId: "parepair-63325",
+          storageBucket: "parepair-63325.appspot.com",
+          messagingSenderId: "269243614085",
+          appId: "1:269243614085:web:af243ba37f8f12f2d1faec"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app); // Initialize Firestore
+      
+        // Sign in logic (as you already have)
+        document.querySelector("button").addEventListener("click", async () => {
+          const email = document.querySelector("input[type='text']").value;
+          const password = document.querySelector("#password-input").value;
+      
+          try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            console.log("Signed in successfully with UID:", userCredential.user.uid);
+            document.getElementById("loading-overlay").style.display = "flex";
+            setTimeout(() => {
+              sessionStorage.setItem("isLoggedIn", "true");
+              window.location.replace("dashboard.html");
+            }, 1000);
+          } catch (error) {
+            console.error("Error signing in:", error.message);
+            alert("Failed to sign in. Please check your credentials.");
+          }
+        });
+      
+        // Redirect if logged in
+        if (sessionStorage.getItem("isLoggedIn")) {
+          window.location.href = "dashboard.html";
         }
-      });
-
-      if (sessionStorage.getItem("isLoggedIn")) {
-        window.location.href = "dashboard.html";
-      }
-
-      window.history.pushState(null, null, window.location.href);
-      window.addEventListener('popstate', function () {
+      
+        // Disable back navigation after login
         window.history.pushState(null, null, window.location.href);
-      });
-    </script>
-</body>
-</html>
+        window.addEventListener('popstate', function () {
+          window.history.pushState(null, null, window.location.href);
+        });    
+      </script>
+      
+  </body>
+  </html>
