@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="styles/dashboard.css">
+  <link rel="stylesheet" href="styles/applying_sv.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <title>Admin Dashboard</title>
 </head>
@@ -27,7 +27,7 @@
               <li><a href="#users"><i class="fas fa-users"></i><span> Users</span></a></li>
               <li><a href="#settings"><i class="fas fa-cog"></i><span> Settings</span></a></li>
               <li><a href="#reports"><i class="fas fa-chart-line"></i><span> Reports</span></a></li>
-              <li><a href="applying_sv.html"><i class="fas fa-clipboard-list"></i><span> Apply for Service</span></a></li>
+              <li><a href="#apply-service"><i class="fas fa-clipboard-list"></i><span> Apply for Service</span></a></li>
               <li><a href="#manage-services"><i class="fas fa-cogs"></i><span> Manage Services</span></a></li>
               <li><a href="#service-status"><i class="fas fa-check-circle"></i><span> Service Status</span></a></li>
               <li><a id="logout-button"><i class="fas fa-sign-out-alt"></i><span> Logout</span></a></li>
@@ -50,40 +50,10 @@
           </div>
         </header>
 
-        <section class="card-container">
-            <div class="user-card">
-              <i class="fas fa-users user-icon"></i>
-              <div class="card-content">
-                <h2>Total Users</h2>
-                <p id="userCount">0</p> 
-              </div>
-            </div>
-            <div class="user-card">
-                <i class="fas fa-calendar-check user-icon"></i>
-                <div class="card-content">
-                  <h2>Pending Appointments</h2>
-                  <p id="appointmentCount">0</p> 
-                </div>
-              </div>
-              <div class="user-card">
-                <i class="fas fa-file-invoice user-icon"></i>
-                <div class="card-content">
-                  <h2>Reports</h2>
-                  <p id="reportCount">0</p> 
-                </div>
-              </div>
-              <div class="user-card">
-                <i class="fas fa-tools user-icon"></i>
-                <div class="card-content">
-                  <h2>Services Available</h2>
-                  <p id="serviceCount">0</p> 
-                </div>
-              </div>
-        </section>
 
         <!-- Table -->
         <section class="table-container">
-          <h2>Recent Appointments</h2>
+          <h2>Applying for Service Provider</h2>
           <table class="appointments-table">
               <thead>
                   <tr>
@@ -93,20 +63,13 @@
                       <th>Date</th>
                       <th>Time</th>
                       <th>Status</th>
+                      <th>Action</th>
                   </tr>
               </thead>
               <tbody id="appointments-tbody">
               </tbody>
           </table>
       </section>
-      
-
-         <!-- Chart -->
-
-         <div class="chart-container">
-            <h2>User Statistics</h2>
-            <canvas id="myChart"></canvas>
-        </div>
         
     </main>
   </div>
@@ -133,13 +96,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-async function countTotalUsers() {
-  const userCollection = collection(db, "users");
-  onSnapshot(userCollection, (snapshot) => {
-    document.getElementById("userCount").textContent = snapshot.size;
-  });
-}
-
 async function fetchUserData(userId) {
   const userDocRef = doc(db, "users", userId);
   onSnapshot(userDocRef, (userDoc) => {
@@ -154,44 +110,11 @@ async function writeUserData(userId, data) {
   await setDoc(userDocRef, data, { merge: true });
 }
 
-function fetchAppointments() {
-  const appointmentsCollection = collection(db, "appointments");
-  onSnapshot(appointmentsCollection, (snapshot) => {
-    const appointmentsTbody = document.getElementById("appointments-tbody");
-    appointmentsTbody.innerHTML = "";
-    let rowCount = 1;
-
-    snapshot.forEach((doc) => {
-      const appointment = doc.data();
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${rowCount++}</td>
-        <td>${appointment.clientFullName}</td>
-        <td>${appointment.serviceProviderJob}</td>
-        <td>${appointment.selectedDate}</td>
-        <td>${appointment.selectedTime}</td>
-        <td>${appointment.bookingStatus}</td>
-      `;
-      appointmentsTbody.appendChild(row);
-    });
-  });
-}
-
-function countPendingAppointments() {
-  const appointmentsCollection = collection(db, "appointments");
-  onSnapshot(appointmentsCollection, (snapshot) => {
-    const pendingCount = snapshot.docs.filter(doc => doc.data().bookingStatus === "Pending").length;
-    document.getElementById("appointmentCount").textContent = pendingCount;
-  });
-}
 
 auth.onAuthStateChanged((user) => {
   if (user) {
     const userId = user.uid;
     fetchUserData(userId);
-    countTotalUsers();
-    fetchAppointments();
-    countPendingAppointments();
     writeUserData(userId, { lastLogin: new Date().toISOString() });
   } else {
     window.location.href = "index.html";

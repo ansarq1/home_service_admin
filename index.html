@@ -41,7 +41,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
       
-        // Firebase configuration and initialization
         const firebaseConfig = {
           apiKey: "AIzaSyBHJ025X5bX0-nhwvbq5CTNxCtRyvGYJE4",
           authDomain: "parepair-63325.firebaseapp.com",
@@ -53,9 +52,8 @@
         
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app); // Initialize Firestore
+        const db = getFirestore(app);
       
-        // Sign in logic (as you already have)
         document.querySelector("button").addEventListener("click", async () => {
           const email = document.querySelector("input[type='text']").value;
           const password = document.querySelector("#password-input").value;
@@ -74,12 +72,11 @@
           }
         });
       
-        // Redirect if logged in
+
         if (sessionStorage.getItem("isLoggedIn")) {
           window.location.href = "dashboard.html";
         }
-      
-        // Disable back navigation after login
+
         window.history.pushState(null, null, window.location.href);
         window.addEventListener('popstate', function () {
           window.history.pushState(null, null, window.location.href);
