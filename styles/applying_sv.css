@@ -253,4 +253,40 @@ tr:hover {
     font-size: 20px;
     font-weight: 600;
 }
+
+button {
+  padding: 8px 12px;
+  margin: 4px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.view-btn {
+  background-color: #3498db;
+}
+
+.view-btn:hover {
+  background-color: #2980b9;
+}
+
+.approve-btn {
+  background-color: #2ecc71;
+}
+
+.approve-btn:hover {
+  background-color: #27ae60;
+}
+
+.decline-btn {
+  background-color: #e74c3c;
+}
+
+.decline-btn:hover {
+  background-color: #c0392b;
+}
+
   

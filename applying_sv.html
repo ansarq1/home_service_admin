@@ -6,6 +6,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="styles/applying_sv.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <title>Admin Dashboard</title>
 </head>
 <body>
@@ -58,11 +59,10 @@
               <thead>
                   <tr>
                       <th>#</th>
-                      <th>Client Name</th>
-                      <th>Service Provider</th>
-                      <th>Date</th>
-                      <th>Time</th>
-                      <th>Status</th>
+                      <th>Full Name</th>
+                      <th>Skill</th>
+                      <th>Years of Experience</th>
+                      <th>Licence Number</th>
                       <th>Action</th>
                   </tr>
               </thead>
@@ -79,54 +79,99 @@
   <script src="resources/js/dashboard.js"></script>
   <script src="chart.js"></script>
   <script type="module">
-  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBHJ025X5bX0-nhwvbq5CTNxCtRyvGYJE4",
-  authDomain: "parepair-63325.firebaseapp.com",
-  projectId: "parepair-63325",
-  storageBucket: "parepair-63325.appspot.com",
-  messagingSenderId: "269243614085",
-  appId: "1:269243614085:web:af243ba37f8f12f2d1faec"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-async function fetchUserData(userId) {
-  const userDocRef = doc(db, "users", userId);
-  onSnapshot(userDocRef, (userDoc) => {
-    if (userDoc.exists()) {
-      document.getElementById("user-data").innerHTML = `<p>User Data: ${JSON.stringify(userDoc.data())}</p>`;
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHJ025X5bX0-nhwvbq5CTNxCtRyvGYJE4",
+      authDomain: "parepair-63325.firebaseapp.com",
+      projectId: "parepair-63325",
+      storageBucket: "parepair-63325.appspot.com",
+      messagingSenderId: "269243614085",
+      appId: "1:269243614085:web:af243ba37f8f12f2d1faec"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    function listenForApplyingUsers() {
+      const usersRef = collection(db, "users");
+      const applyingQuery = query(usersRef, where("applying_SV", "==", "Yes"));
+    
+      onSnapshot(applyingQuery, (querySnapshot) => {
+        const tbody = document.getElementById("appointments-tbody");
+        tbody.innerHTML = "";
+    
+        let rowIndex = 1;
+    
+        querySnapshot.forEach((docSnapshot) => {
+          const data = docSnapshot.data();
+          const row = document.createElement("tr");
+    
+          row.innerHTML = `
+            <td>${rowIndex}</td>
+            <td>${data.fullName || "N/A"}</td>
+            <td>${data.primary_skill || "N/A"}</td>
+            <td>${data.years_of_experience || "N/A"}</td>
+            <td>${data.license_number || "N/A"}</td>
+            <td>
+              <button class="view-btn">View</button>
+              <button class="approve-btn">Approve</button>
+              <button class="decline-btn">Decline</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+          rowIndex++;
+    
+          row.querySelector(".approve-btn").addEventListener("click", () => handleApproval(docSnapshot.id, data.primary_skill, "Approved"));
+          row.querySelector(".decline-btn").addEventListener("click", () => handleApproval(docSnapshot.id, data.primary_skill, "Declined"));
+        });
+      });
     }
-  });
-}
-
-async function writeUserData(userId, data) {
-  const userDocRef = doc(db, "users", userId);
-  await setDoc(userDocRef, data, { merge: true });
-}
-
-
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    const userId = user.uid;
-    fetchUserData(userId);
-    writeUserData(userId, { lastLogin: new Date().toISOString() });
-  } else {
-    window.location.href = "index.html";
-  }
-});
-
-document.getElementById("logout-button").addEventListener("click", async () => {
-  await signOut(auth);
-  sessionStorage.removeItem("isLoggedIn");
-  window.location.href = "index.html";
-});
-
-  </script>
+    
+    async function handleApproval(userId, primarySkill, status) {
+      const userDocRef = doc(db, "users", userId);
+      
+      const updates = {
+        applying_SV: status,
+        jobType: primarySkill,
+      };
+    
+      if (status === "Approved") {
+        updates.isServiceProvider = true; 
+      }
+    
+      await updateDoc(userDocRef, updates);
+    
+      Swal.fire({
+        title: `User ${status}!`,
+        text: `The user has been ${status.toLowerCase()} successfully.`,
+        icon: status === "Approved" ? "success" : "warning",
+        confirmButtonText: "OK",
+        showCloseButton: true,
+        timer: 3000,
+        timerProgressBar: true,
+        customClass: {
+          popup: 'alert-popup'
+        }
+      });
+    }
+    
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        listenForApplyingUsers();
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+    
+    document.getElementById("logout-button").addEventListener("click", async () => {
+      await signOut(auth);
+      sessionStorage.removeItem("isLoggedIn");
+      window.location.href = "index.html";
+    });
+    </script>        
 </body>
 </html>
