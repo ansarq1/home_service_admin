@@ -17,29 +17,9 @@
     width: 100%;
   }
   
-/* Reset and General Styles */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  
-  body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    background-color: #f4f6f9;
-  }
-  
-  .dashboard-container {
-    display: flex;
-    height: 100vh;
-    width: 100%;
-  }
-  
   /* Sidebar Styling */
   .sidebar {
-    background-color: #333;
+    background-color: #124e9a;
     color: #fff;
     width: 250px;
     padding: 20px;
@@ -150,7 +130,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #4CAF50;
+    background-color: #124e9a;
     color: white;
     padding: 15px 20px;
     border-bottom: 1px solid #ddd;
@@ -256,7 +236,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #4CAF50;
+    background-color: #124e9a;
     color: white;
     padding: 15px 20px;
     border-bottom: 1px solid #ddd;
@@ -337,7 +317,7 @@
   
   .user-icon {
     font-size: 30px;
-    color: #4CAF50;
+    color: #124e9a;
     margin-right: 15px;
   }
   
@@ -350,11 +330,11 @@
   .card-content p {
     font-size: 24px;
     font-weight: bold;
-    color: #4CAF50;
+    color: #f17e25;
     margin: 0;
   }
 
-  .table-container {
+.table-container {
     margin-top: 20px;
     padding: 20px;
     background-color: #ffffff;
@@ -366,6 +346,7 @@
 .table-container:hover {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
+
 
 table {
     width: 100%;
@@ -381,7 +362,7 @@ th, td {
 }
 
 th {
-    background-color: #4CAF50;
+    background-color: #124e9a;
     color: white;
     font-weight: 600;
     position: sticky;
@@ -396,6 +377,7 @@ tr:nth-child(even) {
 tr:hover {
     background-color: rgba(76, 175, 80, 0.1);
     transition: background-color 0.3s;
+    cursor: pointer;
 }
 
 .table-container h2 {
@@ -427,6 +409,5 @@ canvas {
     height: auto; 
     width: 100%; 
 }
-
 
 
