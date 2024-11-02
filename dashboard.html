@@ -159,13 +159,17 @@ function fetchAppointments() {
   onSnapshot(appointmentsCollection, (snapshot) => {
     const appointmentsTbody = document.getElementById("appointments-tbody");
     appointmentsTbody.innerHTML = "";
-    let rowCount = 1;
 
-    snapshot.forEach((doc) => {
-      const appointment = doc.data();
+  
+    const appointments = snapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() }))
+      .sort((a, b) => new Date(b.selectedDate) - new Date(a.selectedDate))
+      .slice(0, 5);
+
+    appointments.forEach((appointment, index) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${rowCount++}</td>
+        <td>${index + 1}</td> 
         <td>${appointment.clientFullName}</td>
         <td>${appointment.serviceProviderJob}</td>
         <td>${appointment.selectedDate}</td>
