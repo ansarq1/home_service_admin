@@ -25,7 +25,7 @@
           <ul>
               <li><a href="#dashboard"><i class="fas fa-tachometer-alt"></i><span> Dashboard</span></a></li>
               <li><a href="#appointments"><i class="fas fa-calendar-check"></i><span> Appointments</span></a></li>
-              <li><a href="#users"><i class="fas fa-users"></i><span> Users</span></a></li>
+              <li><a href="users.html"><i class="fas fa-users"></i><span> Users</span></a></li>
               <li><a href="#settings"><i class="fas fa-cog"></i><span> Settings</span></a></li>
               <li><a href="#reports"><i class="fas fa-chart-line"></i><span> Reports</span></a></li>
               <li><a href="#apply-service"><i class="fas fa-clipboard-list"></i><span> Apply for Service</span></a></li>
@@ -35,6 +35,48 @@
           </ul>
       </nav>      
     </aside>
+
+
+    
+<!-- Modal Structure -->
+<div id="userModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>User Details</h2>
+    
+    <div class="info-box">
+      <label>Full Name:</label>
+      <span id="modalFullName">N/A</span>
+    </div>
+
+    <div class="info-box">
+      <label>Primary Skill:</label>
+      <span id="modalPrimarySkill">N/A</span>
+    </div>
+
+    <div class="info-box">
+      <label>Years of Experience:</label>
+      <span id="modalExperience">N/A</span>
+    </div>
+
+    <div class="info-box">
+      <label>License Number:</label>
+      <span id="modalLicenseNumber">N/A</span>
+    </div>
+
+    <div class="info-box">
+      <label>Certification:</label>
+      <span id="modalCertification">N/A</span>
+    </div>
+
+    <div class="info-box">
+      <label>Max Travel Distance:</label>
+      <span id="modalTravelDistance">N/A</span>
+    </div>
+
+  </div>
+</div>
+
     
     <!-- Main Content -->
     <main class="main-content">
@@ -50,7 +92,6 @@
             </div>
           </div>
         </header>
-
 
         <!-- Table -->
         <section class="table-container">
@@ -97,39 +138,41 @@
     const db = getFirestore(app);
     
     function listenForApplyingUsers() {
-      const usersRef = collection(db, "users");
-      const applyingQuery = query(usersRef, where("applying_SV", "==", "Yes"));
-    
-      onSnapshot(applyingQuery, (querySnapshot) => {
-        const tbody = document.getElementById("appointments-tbody");
-        tbody.innerHTML = "";
-    
-        let rowIndex = 1;
-    
-        querySnapshot.forEach((docSnapshot) => {
-          const data = docSnapshot.data();
-          const row = document.createElement("tr");
-    
-          row.innerHTML = `
-            <td>${rowIndex}</td>
-            <td>${data.fullName || "N/A"}</td>
-            <td>${data.primary_skill || "N/A"}</td>
-            <td>${data.years_of_experience || "N/A"}</td>
-            <td>${data.license_number || "N/A"}</td>
-            <td>
-              <button class="view-btn">View</button>
-              <button class="approve-btn">Approve</button>
-              <button class="decline-btn">Decline</button>
-            </td>
-          `;
-          tbody.appendChild(row);
-          rowIndex++;
-    
-          row.querySelector(".approve-btn").addEventListener("click", () => handleApproval(docSnapshot.id, data.primary_skill, "Approved"));
-          row.querySelector(".decline-btn").addEventListener("click", () => handleApproval(docSnapshot.id, data.primary_skill, "Declined"));
-        });
-      });
-    }
+  const usersRef = collection(db, "users");
+  const applyingQuery = query(usersRef, where("applying_SV", "==", "Yes"));
+
+  onSnapshot(applyingQuery, (querySnapshot) => {
+    const tbody = document.getElementById("appointments-tbody");
+    tbody.innerHTML = "";
+
+    let rowIndex = 1;
+
+    querySnapshot.forEach((docSnapshot) => {
+      const data = docSnapshot.data();
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${rowIndex}</td>
+        <td>${data.fullName || "N/A"}</td>
+        <td>${data.primary_skill || "N/A"}</td>
+        <td>${data.years_of_experience || "N/A"}</td>
+        <td>${data.license_number || "N/A"}</td>
+        <td>
+          <button class="view-btn">View</button>
+          <button class="approve-btn">Approve</button>
+          <button class="decline-btn">Decline</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+      rowIndex++;
+
+      row.querySelector(".view-btn").addEventListener("click", () => openModal(data));
+      row.querySelector(".approve-btn").addEventListener("click", () => handleApproval(docSnapshot.id, data.primary_skill, "Approved"));
+      row.querySelector(".decline-btn").addEventListener("click", () => handleApproval(docSnapshot.id, data.primary_skill, "Declined"));
+    });
+  });
+}
+
     
     async function handleApproval(userId, primarySkill, status) {
       const userDocRef = doc(db, "users", userId);
@@ -158,6 +201,32 @@
         }
       });
     }
+
+    function openModal(data) {
+  document.getElementById("modalFullName").textContent = data.fullName || "N/A";
+  document.getElementById("modalPrimarySkill").textContent = data.primary_skill || "N/A";
+  document.getElementById("modalExperience").textContent = data.years_of_experience || "N/A";
+  document.getElementById("modalLicenseNumber").textContent = data.license_number || "N/A";
+  document.getElementById("modalCertification").textContent = data.certification || "N/A";
+  document.getElementById("modalTravelDistance").textContent = data.max_travel_distance || "N/A";
+
+  const modal = document.getElementById("userModal");
+  modal.style.display = "block";
+}
+
+function closeModal() {
+  const modal = document.getElementById("userModal");
+  modal.style.display = "none";
+}
+
+document.querySelector(".close").addEventListener("click", closeModal);
+window.addEventListener("click", (event) => {
+  const modal = document.getElementById("userModal");
+  if (event.target === modal) {
+    closeModal();
+  }
+});
+
     
     auth.onAuthStateChanged((user) => {
       if (user) {
