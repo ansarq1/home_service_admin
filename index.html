@@ -39,7 +39,7 @@
       <script type="module">
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
       
         const firebaseConfig = {
           apiKey: "AIzaSyBHJ025X5bX0-nhwvbq5CTNxCtRyvGYJE4",
@@ -59,29 +59,50 @@
           const password = document.querySelector("#password-input").value;
       
           try {
+            // Sign in the user
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            console.log("Signed in successfully with UID:", userCredential.user.uid);
-            document.getElementById("loading-overlay").style.display = "flex";
-            setTimeout(() => {
-              sessionStorage.setItem("isLoggedIn", "true");
-              window.location.replace("dashboard.html");
-            }, 1000);
+            const uid = userCredential.user.uid;
+            
+            // Check the user's role in Firestore
+            const userDoc = await getDoc(doc(db, "users", uid));
+            
+            if (userDoc.exists()) {
+              const userRole = userDoc.data().role;
+              
+              if (userRole === "admin") {
+                // User is an admin, allow access
+                console.log("Admin login successful!");
+                document.getElementById("loading-overlay").style.display = "flex";
+                setTimeout(() => {
+                  sessionStorage.setItem("isLoggedIn", "true");
+                  window.location.replace("dashboard.html");
+                }, 1000);
+              } else {
+                // User is not an admin, deny access
+                alert("Access denied: You are not an admin.");
+                auth.signOut();
+              }
+            } else {
+              alert("No role found for this user.");
+            }
           } catch (error) {
             console.error("Error signing in:", error.message);
             alert("Failed to sign in. Please check your credentials.");
           }
         });
       
-
+        // Redirect to dashboard if already logged in
         if (sessionStorage.getItem("isLoggedIn")) {
           window.location.href = "dashboard.html";
         }
-
+      
+        // Prevent back navigation
         window.history.pushState(null, null, window.location.href);
         window.addEventListener('popstate', function () {
           window.history.pushState(null, null, window.location.href);
         });    
       </script>
+      
       
   </body>
   </html>
