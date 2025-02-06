@@ -340,15 +340,15 @@
 
         // Populate modal with appointment details
         detailsContainer.innerHTML = `
-    <p><strong>Client Name:</strong> ${appointment.clientFullName}</p>
-    <p><strong>Service:</strong> ${appointment.serviceProviderJob}</p>
-    <p><strong>Date:</strong> ${appointment.selectedDate}</p>
-    <p><strong>Time:</strong> ${appointment.selectedTime}</p>
-    <p><strong>Status:</strong> ${appointment.bookingStatus}</p>
-    <p><strong>Additional Info:</strong> ${
-      appointment.additionalInfo || "N/A"
-    }</p>
-  `;
+          <p><strong>Client Name:</strong> ${appointment.clientFullName}</p>
+          <p><strong>Service:</strong> ${appointment.serviceProviderJob}</p>
+          <p><strong>Date:</strong> ${appointment.selectedDate}</p>
+          <p><strong>Time:</strong> ${appointment.selectedTime}</p>
+          <p><strong>Status:</strong> ${appointment.bookingStatus}</p>
+          <p><strong>Additional Info:</strong> ${
+            appointment.additionalInfo || "N/A"
+          }</p>
+        `;
 
         // Make sure the modal ID matches the HTML structure
         const modal = new bootstrap.Modal(

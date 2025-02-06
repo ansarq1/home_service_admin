@@ -35,7 +35,7 @@
       <div id="loading-overlay">
           <div class="loader"></div>
       </div>
-      <script src="resources/js/index.js"></script>
+      <script src="resources/js/app.js"></script>
       <script type="module">
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -86,8 +86,12 @@
               alert("No role found for this user.");
             }
           } catch (error) {
-            console.error("Error signing in:", error.message);
-            alert("Failed to sign in. Please check your credentials.");
+            if (error === "auth/network-request-failed") {
+              alert(error)
+            } else {
+              console.error("Error signing in:", error.message);
+              alert(error.message);
+            }
           }
         });
       
