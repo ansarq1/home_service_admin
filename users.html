@@ -92,6 +92,7 @@
                       <th>User ID</th>
                       <th>Full Name</th>
                       <th>Role</th>
+                      <th>Job</th>
                       <th>Address</th>
                   </tr>
               </thead>
@@ -245,6 +246,7 @@
           <td>${user.uid}</td>
           <td>${user.fullName || "N/A"}</td>
           <td>${user.isServiceProvider ? "Service Provider" : "Client"}</td>
+          <td>${user.jobType || "N/A"}</td>
           <td>${user.address || "N/A"}</td>
         `;
         // Add event listener to open modal with details
@@ -259,6 +261,7 @@
         <p><strong>Full Name:</strong> ${user.fullName}</p>
         <p><strong>Email:</strong> ${user.email}</p>
         <p><strong>Role:</strong> ${user.isServiceProvider ? "Service Provider" : "Client"}</p>
+        <p><strong>Job:</strong> ${user.jobType || "N/A"}</p>
         <p><strong>Address:</strong> ${user.address}</p>
         <button id="deleteAccountButton" class="btn btn-danger">Delete Account</button>
       `;
