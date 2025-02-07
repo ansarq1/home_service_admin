@@ -74,6 +74,16 @@
       <span id="modalTravelDistance">N/A</span>
     </div>
 
+    <div class="info-box">
+      <label>Government ID:</label>
+      <img id="modalGovernmentID" src="" alt="Government ID" style="display: none; max-width: 100%; height: auto;">
+    </div>
+    
+    <div class="info-box">
+      <label>Selfie:</label>
+      <img id="modalSelfie" src="" alt="Selfie" style="display: none; max-width: 100%; height: auto;">
+    </div>    
+
   </div>
 </div>
 
@@ -203,16 +213,46 @@
     }
 
     function openModal(data) {
-  document.getElementById("modalFullName").textContent = data.fullName || "N/A";
-  document.getElementById("modalPrimarySkill").textContent = data.primary_skill || "N/A";
-  document.getElementById("modalExperience").textContent = data.years_of_experience || "N/A";
-  document.getElementById("modalLicenseNumber").textContent = data.license_number || "N/A";
-  document.getElementById("modalCertification").textContent = data.certification || "N/A";
-  document.getElementById("modalTravelDistance").textContent = data.max_travel_distance || "N/A";
+        document.getElementById("modalFullName").textContent = data.fullName || "N/A";
+        document.getElementById("modalPrimarySkill").textContent = data.primary_skill || "N/A";
+        document.getElementById("modalExperience").textContent = data.years_of_experience || "N/A";
+        document.getElementById("modalLicenseNumber").textContent = data.license_number || "N/A";
+        document.getElementById("modalCertification").textContent = data.certification || "N/A";
+        document.getElementById("modalTravelDistance").textContent = data.max_travel_distance || "N/A";
 
-  const modal = document.getElementById("userModal");
-  modal.style.display = "block";
-}
+        const govIdImg = document.getElementById("modalGovernmentID");
+        const selfieImg = document.getElementById("modalSelfie");
+
+        if (data.government_id_url) {
+          govIdImg.src = data.government_id_url;
+          govIdImg.style.display = "block";
+          govIdImg.onload = () => {
+            // Adjust image size if needed
+            if (govIdImg.naturalWidth > 600) {
+              govIdImg.style.width = "100%";
+            }
+          };
+        } else {
+          govIdImg.style.display = "none";
+        }
+
+        if (data.selfie_url) {
+          selfieImg.src = data.selfie_url;
+          selfieImg.style.display = "block";
+          selfieImg.onload = () => {
+            // Adjust image size if needed
+            if (selfieImg.naturalWidth > 600) {
+              selfieImg.style.width = "100%";
+            }
+          };
+        } else {
+          selfieImg.style.display = "none";
+        }
+
+        const modal = document.getElementById("userModal");
+        modal.style.display = "block";
+      }
+
 
 function closeModal() {
   const modal = document.getElementById("userModal");
