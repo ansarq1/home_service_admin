@@ -241,6 +241,12 @@ window.addEventListener("click", (event) => {
       sessionStorage.removeItem("isLoggedIn");
       window.location.href = "index.html";
     });
+
+    // Check if the user is logged in
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    if (!isLoggedIn) {
+        window.location.replace("index.html");
+    }
     </script>        
 </body>
 </html>

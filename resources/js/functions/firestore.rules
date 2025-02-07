@@ -1,0 +1,18 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null;
+    }
+    match /appointments/{appointmentId} {
+      allow read, write: if request.auth != null;
+    }
+    match /{document=**} {
+      // Allow read and write access only for authenticated users
+      allow read, write: if request.auth != null;
+    }
+    // Restrict deletions to ONLY the specified admin UID
+      allow delete: if request.auth != null && request.auth.uid == "z5G75q3O0yep4rw7vbdp5qQhboh2";
+  }
+}

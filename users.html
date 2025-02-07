@@ -249,12 +249,15 @@
       const modal = new bootstrap.Modal(document.getElementById("appointmentModal"));
       modal.show();
 
-      // Add event listener to the delete button
+      // // Add event listener to the delete button
       // document.getElementById("deleteAccountButton").addEventListener("click", async () => {
       //   try {
       //     // Confirm deletion
       //     const confirmDelete = confirm("Are you sure you want to delete this account?");
       //     if (confirmDelete) {
+      //       // Call the Cloud Function to delete the user from Authentication
+      //       const deleteUserFunction = httpsCallable(functions, "deleteUser");
+      //       await deleteUserFunction({ uid: user.uid });
 
       //       // Delete the user document from Firestore
       //       await deleteDoc(doc(db, "users", user.id));
@@ -268,6 +271,12 @@
       //     alert("An error occurred while deleting the account.");
       //   }
       // });
+    }
+
+    // Check if the user is logged in
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    if (!isLoggedIn) {
+        window.location.replace("index.html");
     }
 
     fetchUsers();
