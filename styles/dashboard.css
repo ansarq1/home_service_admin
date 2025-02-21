@@ -410,3 +410,36 @@ canvas {
     height: auto; 
     width: 100%; 
 }
+
+  .rating-bar {
+    display: inline-block;
+    font-size: 24px;
+    color: #ffd700; /* Gold color for stars */
+    position: relative;
+  }
+
+  .rating-bar .stars {
+    position: relative;
+    display: inline-block;
+  }
+
+  .rating-bar .stars::before {
+    content: "★★★★★";
+    color: #ddd; /* Gray color for empty stars */
+  }
+
+  .rating-bar .stars::after {
+    content: "★★★★★";
+    color: #ffd700; /* Gold color for filled stars */
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: hidden;
+    width: 0; /* Initially set to 0 */
+  }
+
+  .rating-bar[data-rating="1"] .stars::after { width: 20%; }
+  .rating-bar[data-rating="2"] .stars::after { width: 40%; }
+  .rating-bar[data-rating="3"] .stars::after { width: 60%; }
+  .rating-bar[data-rating="4"] .stars::after { width: 80%; }
+  .rating-bar[data-rating="5"] .stars::after { width: 100%; }
