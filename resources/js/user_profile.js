@@ -81,7 +81,7 @@ function displayReviews(reviews) {
     reviewsContainer.innerHTML = reviews.map(review => `
         <div class="review-card">
             <div class="d-flex align-items-center mb-2">
-                <h6 class="mb-0">${review.clientName || "Anonymous"}</h6>
+                <h6 class="mb-0">${review.clientFirstName || "Anonymous"}</h6>
             </div>
             <p class="rating-stars">${generateStars(review.rating)}</p>
             <p class="review-text">"${review.review}"</p>
