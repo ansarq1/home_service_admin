@@ -112,43 +112,71 @@ function fetchUsers() {
 }
 
 function displayUsers(users) {
-    const usersTbody = document.getElementById("users-tbody");
-    usersTbody.innerHTML = "";
-    let rowCount = 1;
-  
-    users.forEach((user) => {
-      const isVerified = user.isIDFrontTaken && user.isSelfieTaken; // Check if user is verified
-      const verificationStatus = isVerified ? "Verified" : "Not Verified"; // Set verification status text
-      const verificationIcon = isVerified ? "✅" : "❌"; // Use icons for visual indication
-  
+  const usersTbody = document.getElementById("users-tbody");
+  usersTbody.innerHTML = "";
+  let rowCount = 1;
+
+  users.forEach((user) => {
+      const isVerified = user.isIDFrontTaken && user.isSelfieTaken;
+      const verificationStatus = isVerified ? "Verified" : "Not Verified";
+      const verificationIcon = isVerified ? "✅" : "❌";
+
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${rowCount++}</td>
-        <td>${user.uid}</td>
-        <td>${user.fullName || "N/A"}</td>
-        <td>${user.isServiceProvider ? "Service Provider" : "Client"}</td>
-        <td>${user.jobType || "N/A"}</td>
-        <td>${user.address || "N/A"}</td>
-        <td>${verificationIcon} ${verificationStatus}</td>
-        <td>
-          <button class="btn btn-primary btn-sm view-details-button" data-uid="${user.uid}">View Details</button>
-        </td>
+          <td>${rowCount++}</td>
+          <td>${user.uid}</td>
+          <td>${user.fullName || "N/A"}</td>
+          <td>${user.isServiceProvider ? "Service Provider" : "Client"}</td>
+          <td>${user.jobType || "N/A"}</td>
+          <td>${user.address || "N/A"}</td>
+          <td>${verificationIcon} ${verificationStatus}</td>
+          <td>
+              <button class="btn btn-primary btn-sm view-details-button" data-uid="${user.uid}">View Details</button>
+          </td>
       `;
       usersTbody.appendChild(row);
-    });
-  
-    // Add event listeners to all "View Details" buttons
-    const viewDetailsButtons = document.querySelectorAll(".view-details-button");
-    viewDetailsButtons.forEach((button) => {
+  });
+
+  // Add event listeners to "View Details" buttons
+  document.querySelectorAll(".view-details-button").forEach((button) => {
       button.addEventListener("click", async () => {
-        const uid = button.getAttribute("data-uid"); // Get the user's UID
-        const user = allUsers.find((u) => u.uid === uid); // Find the user in the allUsers array
-        if (user) {
-          await showUserDetails(user); // Show the user details in the modal
-        }
+          const uid = button.getAttribute("data-uid");
+          const user = allUsers.find((u) => u.uid === uid);
+          if (user) {
+              // Show loading overlay
+              document.getElementById("loading-overlay").style.display = "flex";
+
+              await showUserDetails(user);
+
+              // Hide loading overlay after data is fetched
+              document.getElementById("loading-overlay").style.display = "none";
+          }
       });
-    });
-  }
+  });
+
+
+  // Add event listeners to all "View Details" buttons
+  document.querySelectorAll(".view-details-button").forEach((button) => {
+      button.addEventListener("click", async () => {
+          const uid = button.getAttribute("data-uid");
+          const user = allUsers.find((u) => u.uid === uid);
+          if (user) {
+              // Show loading spinner
+              button.disabled = true;
+              button.querySelector(".button-text").textContent = "Loading...";
+              button.querySelector(".spinner-border").classList.remove("d-none");
+
+              await showUserDetails(user);
+
+              // Reset button after loading
+              button.disabled = false;
+              button.querySelector(".button-text").textContent = "View Details";
+              button.querySelector(".spinner-border").classList.add("d-none");
+          }
+      });
+  });
+}
+
 
   async function showUserDetails(user) {
     const detailsContainer = document.getElementById("appointmentDetails");
