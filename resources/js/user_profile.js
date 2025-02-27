@@ -58,6 +58,59 @@ async function fetchUserProfile(uid) {
     }
 }
 
+// Fetch and Display Reviews for the Service Provider
+async function fetchServiceProviderReviews(uid) {
+    const reviewsCollection = collection(db, "reviews");
+    const q = query(reviewsCollection, where("serviceProviderUid", "==", uid));
+    const querySnapshot = await getDocs(q);
+
+    const reviews = querySnapshot.docs.map(doc => doc.data());
+    displayReviews(reviews);
+}
+
+// Function to Display Reviews
+// Function to Display Reviews
+function displayReviews(reviews) {
+    const reviewsContainer = document.getElementById("reviewsContainer");
+    
+    if (reviews.length === 0) {
+        reviewsContainer.innerHTML = "<p>No reviews yet.</p>";
+        return;
+    }
+
+    reviewsContainer.innerHTML = reviews.map(review => `
+        <div class="review-card">
+            <div class="d-flex align-items-center mb-2">
+                <h6 class="mb-0">${review.clientName || "Anonymous"}</h6>
+            </div>
+            <p class="rating-stars">${generateStars(review.rating)}</p>
+            <p class="review-text">"${review.review}"</p>
+            ${review.imageUrl ? `<img src="${review.imageUrl}" alt="Review Image" class="review-image mt-2">` : ""}
+            <small class="text-muted">${formatTimestamp(review.timeStamp)}</small>
+        </div>
+    `).join("");
+}
+
+// Generate Star Rating HTML
+function generateStars(rating) {
+    let stars = "";
+    for (let i = 0; i < 5; i++) {
+        stars += `<i class="fas fa-star${i < rating ? " text-warning" : " text-secondary"}"></i>`;
+    }
+    return stars;
+}
+
+// Convert Firestore Timestamp to Readable Date
+function formatTimestamp(timestamp) {
+    if (!timestamp || !timestamp.toDate) return "Unknown Date";
+    const date = timestamp.toDate();
+    return date.toLocaleDateString("en-US", { 
+        year: 'numeric', month: 'long', day: 'numeric', 
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
+    });
+}
+
+
 let currentImage = 0; // 0 = ID Front, 1 = Selfie
 let currentUser = null; // Store user data globally
 
@@ -93,8 +146,9 @@ document.getElementById("prevBtn").addEventListener("click", () => {
 });
 
 // Function to display user details (Updated to use ID slider)
+// Modify displayUserProfile to Show Reviews
 function displayUserProfile(user) {
-    currentUser = user; // Store user globally
+    currentUser = user;
     document.getElementById("profile-picture").src = user.profileImage;
     document.getElementById("fullName").textContent = user.fullName || "N/A";
     document.getElementById("role").textContent = user.isServiceProvider ? "Service Provider" : "Client";
@@ -113,8 +167,14 @@ function displayUserProfile(user) {
     document.getElementById("idType").textContent = user.idType || "N/A";
     document.getElementById("validIDNumber").textContent = user.validIDNumber || "N/A";
 
-    currentImage = 0; // Reset slider to first image
+    currentImage = 0;
     updateIDImage();
+
+    // Fetch and display reviews if the user is a Service Provider
+    if (user.isServiceProvider) {
+        document.getElementById("reviewSection").style.display = "block";
+        fetchServiceProviderReviews(user.uid);
+    }
 }
 
 

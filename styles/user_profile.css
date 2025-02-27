@@ -41,3 +41,24 @@ body {
     transition: opacity 0.3s ease-in-out;
 }
 
+.review-card {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.rating-stars {
+    color: #f17e25;
+}
+.review-text {
+    font-style: italic;
+}
+.review-image {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    border-radius: 5px;
+    display: block;
+}
+
