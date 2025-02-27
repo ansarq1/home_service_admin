@@ -12,6 +12,19 @@
     .user-card:hover{
       cursor: pointer;
     }
+
+    #appointmentModal .modal-body {
+        padding: 20px;
+      }
+
+      #appointmentModal .modal-body p {
+        margin-bottom: 10px;
+      }
+
+      #appointmentModal .modal-body h4 {
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
   </style>
   <title>Admin Dashboard</title>
 </head>
@@ -94,6 +107,8 @@
                       <th>Role</th>
                       <th>Job</th>
                       <th>Address</th>
+                      <th>Verification Status</th>
+                      <th>Action</th>
                   </tr>
               </thead>
               <tbody id="users-tbody">
@@ -110,18 +125,23 @@
     </main>
   </div>
 
+<!-- Modal for User Details -->
 <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="appointmentModalLabel">User Details</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" id="appointmentDetails">
-        <!-- User details will be populated here -->
+      <div class="modal-body">
+        <div id="appointmentDetails"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger">Ban</button>
+        <div id="view-user-profile">
+          <button id="viewProfileButton" class="btn btn-primary btn-m" data-uid="">
+            View Profile
+          </button>
+        </div>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
@@ -130,281 +150,6 @@
 
   <script src="resources/js/dashboard.js"></script>
   <script src="chart.js"></script>
-  <script type="module">
-    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { 
-      getFirestore, 
-      collection, 
-      onSnapshot, 
-      deleteDoc, 
-      doc, 
-      query, 
-      where, 
-      getDocs, 
-      updateDoc // Add this
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-functions.js";
-  
-    // Initialize Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyBHJ025X5bX0-nhwvbq5CTNxCtRyvGYJE4",
-      authDomain: "parepair-63325.firebaseapp.com",
-      projectId: "parepair-63325",
-      storageBucket: "parepair-63325.appspot.com",
-      messagingSenderId: "269243614085",
-      appId: "1:269243614085:web:af243ba37f8f12f2d1faec"
-    };
-  
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const functions = getFunctions(app);
-  
-    let allUsers = []; // Store all users for filtering
-  
-    // Authentication state listener
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        const userId = user.uid;
-        fetchUserData(userId);
-        countTotalAppointments();
-        fetchAppointments();
-        countPendingAppointments();
-        writeUserData(userId, { lastLogin: new Date().toISOString() });
-      } else {
-        window.location.href = "index.html";
-      }
-    });
-  
-    // Logout button event listener
-    document.getElementById("logout-button").addEventListener("click", async () => {
-      try {
-        await signOut(auth);
-        sessionStorage.removeItem("isLoggedIn");
-        window.location.href = "index.html";
-      } catch (error) {
-        console.error("Error signing out:", error);
-      }
-    });
-  
-    async function countTotalUsers() {
-      const usersCollection = collection(db, "users");
-      onSnapshot(usersCollection, (snapshot) => {
-        let totalClient = 0;
-        let totalServiceProviders = 0;
-        let totalUsers = 0;
-  
-        snapshot.forEach((doc) => {
-          const user = doc.data();
-          if (user.isServiceProvider) {
-            totalServiceProviders += 1;
-          } else if (!user.isServiceProvider) {
-            totalClient += 1;
-          }
-        });
-  
-        document.getElementById("clientCount").textContent = totalClient;
-        document.getElementById("serviceProviderCount").textContent = totalServiceProviders;
-        document.getElementById("userCount").textContent = totalClient + totalServiceProviders;
-      });
-    }
-  
-    function fetchUsers() {
-      const usersCollection = collection(db, "users");
-      const searchBar = document.getElementById("search-bar");
-  
-      onSnapshot(usersCollection, (snapshot) => {
-        allUsers = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        displayUsers(allUsers); // Display all users by default
-  
-        // Add event listeners to the cards
-        document.getElementById("all-users-card").addEventListener("click", () => {
-          displayUsers(allUsers); // Show only regular users
-        });
-  
-        document.getElementById("client-card").addEventListener("click", () => {
-          const clientUsers = allUsers.filter(user => !user.isServiceProvider);
-          displayUsers(clientUsers);
-        });
-  
-        document.getElementById("service-provider-card").addEventListener("click", () => {
-          const serviceProviders = allUsers.filter(user => user.isServiceProvider); // Filter service providers
-          displayUsers(serviceProviders); // Show only service providers
-        });
-  
-        // Search functionality
-        searchBar.addEventListener("input", (e) => {
-          const searchTerm = e.target.value.toLowerCase();
-          const filteredUsers = allUsers.filter((user) =>
-            (user.fullName || "").toLowerCase().includes(searchTerm)
-          );
-          displayUsers(filteredUsers);
-        });
-      });
-    }
-  
-    function displayUsers(users) {
-      const usersTbody = document.getElementById("users-tbody");
-      usersTbody.innerHTML = "";
-      let rowCount = 1;
-  
-      users.forEach((user) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${rowCount++}</td>
-          <td>${user.uid}</td>
-          <td>${user.fullName || "N/A"}</td>
-          <td>${user.isServiceProvider ? "Service Provider" : "Client"}</td>
-          <td>${user.jobType || "N/A"}</td>
-          <td>${user.address || "N/A"}</td>
-        `;
-        // Add event listener to open modal with details
-        row.addEventListener("click", () => showUserDetails(user));
-        usersTbody.appendChild(row);
-      });
-    }
-  
-    async function showUserDetails(user) {
-      const detailsContainer = document.getElementById("appointmentDetails");
-      detailsContainer.innerHTML = `
-        <p><strong>Full Name:</strong> ${user.fullName}</p>
-        <p><strong>Email:</strong> ${user.email}</p>
-        <p><strong>Role:</strong> ${user.isServiceProvider ? "Service Provider" : "Client"}</p>
-        <p><strong>Job:</strong> ${user.jobType || "N/A"}</p>
-        <p><strong>Address:</strong> ${user.address}</p>
-      `;
-  
-      // If the user is a service provider, fetch and display their ratings and completed bookings count
-      if (user.isServiceProvider) {
-        const { ratings, totalRating, averageRating } = await fetchServiceProviderRatings(user.uid);
-        const completedBookingsCount = await fetchCompletedBookings(user.uid);
-  
-        if (ratings.length > 0) {
-          detailsContainer.innerHTML += `
-            <h4>Ratings:</h4>
-            <p><strong>Total Ratings:</strong> ${totalRating.toFixed(2)}</p>
-            <p><strong>Average Rating:</strong> ${averageRating.toFixed(2)}</p>
-            <div class="rating-bar" data-rating="${Math.round(averageRating)}">
-              <div class="stars"></div>
-            </div>
-            <ul>
-              ${ratings.map(rating => `<li>${rating.rating} stars - ${rating.comment || "No comment"}</li>`).join("")}
-            </ul>
-          `;
-        } else {
-          detailsContainer.innerHTML += `<p>No ratings available.</p>`;
-        }
-  
-        detailsContainer.innerHTML += `
-          <h4>Completed Bookings:</h4>
-          <p><strong>Total Completed Bookings:</strong> ${completedBookingsCount}</p>
-        `;
-  
-        // Add the Terminate Service Provider Account button
-        detailsContainer.innerHTML += `
-          <button id="terminateServiceProviderButton" class="btn btn-warning text-white">Terminate Service Provider Account</button>
-        `;
-      }
-  
-      detailsContainer.innerHTML += `<button id="deleteAccountButton" class="btn btn-danger">Delete Account</button>`;
-  
-      // Show the modal
-      const modal = new bootstrap.Modal(document.getElementById("appointmentModal"));
-      modal.show();
-  
-      // Add event listener to the delete button
-      document.getElementById("deleteAccountButton").addEventListener("click", async () => {
-        try {
-          // Confirm deletion
-          const confirmDelete = confirm("Are you sure you want to delete this account?");
-          if (confirmDelete) {
-            // Call the Cloud Function to delete the user from Authentication
-            const deleteUserFunction = httpsCallable(functions, "deleteUser");
-            await deleteUserFunction({ uid: user.uid });
-  
-            // Delete the user document from Firestore
-            await deleteDoc(doc(db, "users", user.id));
-  
-            alert("Account deleted successfully!");
-            modal.hide();
-            fetchUsers(); // Refresh the user list
-          }
-        } catch (error) {
-          console.error("Error deleting account:", error);
-          alert("An error occurred while deleting the account.");
-        }
-      });
-  
-      // Add event listener to the terminate service provider button
-      if (user.isServiceProvider) {
-        document.getElementById("terminateServiceProviderButton").addEventListener("click", async () => {
-          try {
-            // Confirm termination
-            const confirmTerminate = confirm("Are you sure you want to terminate this service provider account? This will revoke their service provider status.");
-            if (confirmTerminate) {
-              // Update the isServiceProvider field to false
-              await updateDoc(doc(db, "users", user.id), {
-                isServiceProvider: false,
-              });
-  
-              alert("Service provider account terminated successfully!");
-              modal.hide();
-              fetchUsers(); // Refresh the user list
-            }
-          } catch (error) {
-            console.error("Error terminating service provider account:", error);
-            alert("An error occurred while terminating the service provider account.");
-          }
-        });
-      }
-    }
-  
-    async function fetchServiceProviderRatings(serviceProviderId) {
-      const ratingsCollection = collection(db, "reviews");
-      const q = query(ratingsCollection, where("serviceProviderUid", "==", serviceProviderId));
-      const querySnapshot = await getDocs(q);
-  
-      const ratings = querySnapshot.docs.map(doc => doc.data().rating); // Extract the "rating" field
-      const totalRatings = ratings.length;
-  
-      if (totalRatings === 0) {
-        return {
-          ratings: [],
-          totalRating: 0,
-          averageRating: 0,
-        };
-      }
-  
-      const totalRating = ratings.reduce((sum, rating) => sum + rating, 0); // Sum all ratings
-      const averageRating = totalRating / totalRatings; // Calculate average
-  
-      return {
-        ratings: querySnapshot.docs.map(doc => doc.data()), // Return all rating data
-        totalRating,
-        averageRating,
-      };
-    }
-  
-    async function fetchCompletedBookings(serviceProviderUid) {
-      const appointmentsCollection = collection(db, "appointments");
-      const q = query(
-        appointmentsCollection,
-        where("serviceProviderUid", "==", serviceProviderUid),
-        where("bookingStatus", "==", "Completed")
-      );
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.size; // Return the count of completed bookings
-    }
-  
-    // Check if the user is logged in
-    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-    if (!isLoggedIn) {
-      window.location.replace("index.html");
-    }
-  
-    fetchUsers();
-    countTotalUsers();
-  </script>
+  <script type="module" src="resources/js/users.js"></script>
 </body>
 </html>

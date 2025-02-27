@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles/user_profile.css">
+</head>
+<body>
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card profile-card text-center shadow-sm mt-5">
+          <div class="card-body">
+            <!-- Profile Image -->
+            <div class="profile-header">
+              <img src="https://via.placeholder.com/150" alt="Profile Picture" class="profile-picture img-thumbnail" id="profile-picture">
+              <h2 id="fullName" class="mt-3">Loading...</h2>
+              <p id="role" class="text-muted">Loading...</p>
+            </div>
+
+            <!-- User Information -->
+            <div class="profile-details mt-3">
+              <h5 class="text-primary">User Information</h5>
+              <ul class="list-group list-group-flush text-start">
+                <li class="list-group-item"><i class="fas fa-envelope"></i> <strong>Email:</strong> <span id="email">Loading...</span></li>
+                <li class="list-group-item"><i class="fas fa-briefcase"></i> <strong>Job Type:</strong> <span id="jobType">Loading...</span></li>
+                <li class="list-group-item"><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> <span id="address">Loading...</span></li>
+                <li class="list-group-item">
+                  <i class="fas fa-check-circle"></i> <strong>Verification Status:</strong> 
+                  <span id="verificationStatus" class="badge bg-secondary">Loading...</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Verification Details Button -->
+            <div class="mt-3">
+              <button id="showVerificationBtn" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#verificationModal" disabled>
+                <i class="fas fa-id-card"></i> View Verification Details
+              </button>
+            </div>
+
+            <!-- Ratings (Service Providers Only) -->
+            <div id="ratingsSection" class="profile-details mt-4 d-none">
+              <h5 class="text-primary">Ratings</h5>
+              <p><i class="fas fa-star text-warning"></i> <strong>Average Rating:</strong> <span id="averageRating">0</span></p>
+              <p><i class="fas fa-chart-line"></i> <strong>Total Ratings:</strong> <span id="totalRatings">0</span></p>
+              <ul id="ratingsList" class="list-group"></ul>
+            </div>
+
+            <!-- Completed Bookings (Service Providers Only) -->
+            <div id="completedBookingsSection" class="profile-details mt-4 d-none">
+              <h5 class="text-primary">Completed Bookings</h5>
+              <p><i class="fas fa-calendar-check"></i> <strong>Total Completed Bookings:</strong> <span id="completedBookings">0</span></p>
+            </div>
+
+            <!-- Back Button -->
+            <div class="mt-4">
+              <a href="dashboard.html" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Verification Modal -->
+<div class="modal fade" id="verificationModal" tabindex="-1" aria-labelledby="verificationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="verificationModalLabel">Verification Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p><strong>ID Type:</strong> <span id="idType">Loading...</span></p>
+        <p><strong>Valid ID Number:</strong> <span id="validIDNumber">Loading...</span></p>
+
+        <!-- ID Image Slider -->
+        <div id="idImageContainer" class="mt-3">
+          <img id="idImage" src="" alt="ID Image" class="img-fluid id-image shadow-sm">
+          <p id="imageCaption" class="mt-2">Front of ID</p>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="mt-3">
+          <button id="prevBtn" class="btn btn-outline-primary" disabled>Previous</button>
+          <button id="nextBtn" class="btn btn-primary">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Firebase and Custom Script -->
+  <script type="module" src="resources/js/user_profile.js"></script>
+
+</body>
+</html>

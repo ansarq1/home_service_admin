@@ -1,0 +1,43 @@
+body {
+    background-color: #f5f6fa;
+}
+
+.profile-card {
+    border-radius: 15px;
+    padding: 20px;
+    background: white;
+}
+
+.profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-details h5 {
+    color: #124e9a;
+}
+
+.list-group-item {
+    background: none;
+    border: none;
+}
+
+.badge {
+    font-size: 14px;
+}
+
+.modal img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.id-image {
+    width: 200px; /* Make images smaller */
+    height: auto;
+    border-radius: 5px;
+    transition: opacity 0.3s ease-in-out;
+}
+
