@@ -178,61 +178,59 @@ function displayUsers(users) {
 }
 
 
-  async function showUserDetails(user) {
-    const detailsContainer = document.getElementById("appointmentDetails");
-    const isVerified = user.isIDFrontTaken && user.isSelfieTaken; // Check if user is verified
-    const verificationStatus = isVerified ? "Verified" : "Not Verified"; // Set verification status text
-  
-    // Display basic user details
-    detailsContainer.innerHTML = `
-      <p><strong>Full Name:</strong> ${user.fullName || "N/A"}</p>
-      <p><strong>Email:</strong> ${user.email || "N/A"}</p>
-      <p><strong>Role:</strong> ${user.isServiceProvider ? "Service Provider" : "Client"}</p>
-      <p><strong>Job Type:</strong> ${user.jobType || "N/A"}</p>
-      <p><strong>Address:</strong> ${user.address || "N/A"}</p>
-      <p><strong>Verification Status:</strong> ${verificationStatus}</p>
+async function showUserDetails(user) {
+  const detailsContainer = document.getElementById("appointmentDetails");
+  const isVerified = user.isIDFrontTaken && user.isSelfieTaken; // Check if user is verified
+  const verificationStatus = isVerified ? "Verified" : "Not Verified"; // Set verification status text
+
+  // Display basic user details
+  detailsContainer.innerHTML = `
+    <p><strong>Full Name:</strong> ${user.fullName || "N/A"}</p>
+    <p><strong>Email:</strong> ${user.email || "N/A"}</p>
+    <p><strong>Role:</strong> ${user.isServiceProvider ? "Service Provider" : "Client"}</p>
+    <p><strong>Job Type:</strong> ${user.jobType || "N/A"}</p>
+    <p><strong>Address:</strong> ${user.address || "N/A"}</p>
+    <p><strong>Verification Status:</strong> ${verificationStatus}</p>
+  `;
+
+  // If the user is a service provider, fetch and display their average rating and stars
+  if (user.isServiceProvider) {
+    const { averageRating } = await fetchServiceProviderRatings(user.uid);
+    const completedBookingsCount = await fetchCompletedBookings(user.uid);
+
+    detailsContainer.innerHTML += `
+      <h4>Ratings:</h4>
+      <p><strong>Average Rating:</strong> ${averageRating.toFixed(2)}</p>
+      <div class="rating-bar" data-rating="${Math.round(averageRating)}">
+        <div class="stars"></div>
+      </div>
     `;
-  
-    // If the user is a service provider, fetch and display their ratings and completed bookings count
-    if (user.isServiceProvider) {
-      const { ratings, totalRating, averageRating } = await fetchServiceProviderRatings(user.uid);
-      const completedBookingsCount = await fetchCompletedBookings(user.uid);
-  
-      if (ratings.length > 0) {
-        detailsContainer.innerHTML += `
-          <h4>Ratings:</h4>
-          <p><strong>Total Ratings:</strong> ${totalRating.toFixed(2)}</p>
-          <p><strong>Average Rating:</strong> ${averageRating.toFixed(2)}</p>
-          <div class="rating-bar" data-rating="${Math.round(averageRating)}">
-            <div class="stars"></div>
-          </div>
-          <ul>
-            ${ratings.map(rating => `<li>${rating.rating} stars - ${rating.review || "No comment"}</li>`).join("")}
-          </ul>
-        `;
-      } else {
-        detailsContainer.innerHTML += `<p>No ratings available.</p>`;
-      }
-  
-      detailsContainer.innerHTML += `
-        <h4>Completed Bookings:</h4>
-        <p><strong>Total Completed Bookings:</strong> ${completedBookingsCount}</p>
-      `;
-    }
-  
-    // Set the UID for the "View Profile" button
-    const viewProfileButton = document.getElementById("viewProfileButton");
-    viewProfileButton.setAttribute("data-uid", user.uid);
-  
-    // Show the modal
-    const modal = new bootstrap.Modal(document.getElementById("appointmentModal"));
-    modal.show();
+
+    detailsContainer.innerHTML += `
+      <h4>Completed Bookings:</h4>
+      <p><strong>Total Completed Bookings:</strong> ${completedBookingsCount}</p>
+    `;
   }
+
+  // Set the UID for the "View Profile" button
+  const viewProfileButton = document.getElementById("viewProfileButton");
+  viewProfileButton.setAttribute("data-uid", user.uid);
+
+  // Remove any previous event listeners before adding a new one
+  viewProfileButton.replaceWith(viewProfileButton.cloneNode(true));
+  document.getElementById("viewProfileButton").addEventListener("click", () => {
+    window.open(`user_profile.html?uid=${user.uid}`, "_blank");
+  });
+
+  // Show the modal
+  const modal = new bootstrap.Modal(document.getElementById("appointmentModal"));
+  modal.show();
+}
   
   // Add event listener to the "View Profile" button
   document.getElementById("viewProfileButton").addEventListener("click", () => {
     const uid = document.getElementById("viewProfileButton").getAttribute("data-uid");
-    window.location.href = `user_profile.html?uid=${uid}`; // Navigate to user_profile.html with the UID
+    window.open = `user_profile.html?uid=${uid}`, "_blank"; // Navigate to user_profile.html with the UID
   });
 
 async function fetchServiceProviderRatings(serviceProviderId) {

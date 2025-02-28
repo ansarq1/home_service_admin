@@ -149,6 +149,7 @@ document.getElementById("prevBtn").addEventListener("click", () => {
 // Modify displayUserProfile to Show Reviews
 function displayUserProfile(user) {
     currentUser = user;
+    document.title = `${user.fullName} - Profile`;
     document.getElementById("profile-picture").src = user.profileImage;
     document.getElementById("fullName").textContent = user.fullName || "N/A";
     document.getElementById("role").textContent = user.isServiceProvider ? "Service Provider" : "Client";
@@ -222,4 +223,3 @@ async function fetchCompletedBookings(serviceProviderUid) {
     const querySnapshot = await getDocs(q);
     return querySnapshot.size;
 }
-
