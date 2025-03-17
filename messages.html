@@ -92,6 +92,42 @@
         const userSnap = await getDoc(userRef);
         return userSnap.exists() ? userSnap.data().fullName || "Unknown User" : "Unknown User";
       }
+
+      // Add this after the existing code in your <script> block
+
+// Function to send a message
+  async function sendMessage() {
+    const messageInput = document.getElementById("message-input");
+    const message = messageInput.value.trim();
+
+    if (!message || !currentChatUserId) return; // Ensure there's a message and a selected user
+
+    try {
+      // Add the message to Firestore
+      await addDoc(collection(db, "admin_chats"), {
+        senderId: currentChatUserId,
+        message: message,
+        isAdmin: true, // Mark as admin message
+        timestamp: serverTimestamp(),
+      });
+
+      // Clear the input field
+      messageInput.value = "";
+    } catch (error) {
+      console.error("Error sending message: ", error);
+      alert("Failed to send message. Please try again.");
+    }
+  }
+
+  // Add event listener for the send button
+  document.getElementById("send-button").addEventListener("click", sendMessage);
+
+  // Allow pressing Enter to send a message
+  document.getElementById("message-input").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  });
     
       async function loadUserList() {
         const userList = document.getElementById("user-list");
