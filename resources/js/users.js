@@ -177,7 +177,6 @@ function displayUsers(users) {
   });
 }
 
-
 async function showUserDetails(user) {
   const detailsContainer = document.getElementById("appointmentDetails");
   const isVerified = user.isIDFrontTaken && user.isSelfieTaken; // Check if user is verified
@@ -210,6 +209,16 @@ async function showUserDetails(user) {
       <h4>Completed Bookings:</h4>
       <p><strong>Total Completed Bookings:</strong> ${completedBookingsCount}</p>
     `;
+
+    // Add the "Terminate Service Provider Account" button
+    detailsContainer.innerHTML += `
+      <button id="terminateAccountButton" class="btn btn-danger btn-sm">Terminate Service Provider Account</button>
+    `;
+
+    // Add event listener to the "Terminate Service Provider Account" button
+    document.getElementById("terminateAccountButton").addEventListener("click", () => {
+      terminateServiceProviderAccount(user.uid);
+    });
   }
 
   // Set the UID for the "View Profile" button
@@ -257,6 +266,30 @@ async function fetchServiceProviderRatings(serviceProviderId) {
     totalRating,
     averageRating,
   };
+}
+
+async function terminateServiceProviderAccount(uid) {
+  // Show a confirmation dialog
+  const isConfirmed = confirm("Are you sure you want to terminate this service provider's account?");
+  
+  if (isConfirmed) {
+    try {
+      // Update the user's document to set isServiceProvider to false
+      const userDocRef = doc(db, "users", uid);
+      await updateDoc(userDocRef, {
+        isServiceProvider: false,
+      });
+
+      alert("Service provider account terminated successfully.");
+      // Refresh the user details or close the modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById("appointmentModal"));
+      modal.hide();
+      fetchUsers(); // Refresh the user list
+    } catch (error) {
+      console.error("Error terminating service provider account:", error);
+      alert("An error occurred while terminating the account.");
+    }
+  }
 }
 
 async function fetchCompletedBookings(serviceProviderUid) {
