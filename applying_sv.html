@@ -127,6 +127,16 @@
       <img id="modalSelfie" src="" alt="Selfie" style="display: none; max-width: 100%; height: auto;">
     </div>    
 
+    <div class="info-box">
+      <label>NBI Clearance:</label>
+      <img id="modalNbiClearance" src="" alt="NBI Clearance" style="display: none; max-width: 100%; height: auto;">
+    </div>
+    
+    <div class="info-box">
+      <label>Police Clearance:</label>
+      <img id="modalPoliceClearance" src="" alt="Police Clearance" style="display: none; max-width: 100%; height: auto;">
+    </div>    
+
   </div>
 </div>
 
@@ -256,45 +266,39 @@
     }
 
     function openModal(data) {
-        document.getElementById("modalFullName").textContent = data.fullName || "N/A";
-        document.getElementById("modalPrimarySkill").textContent = data.primary_skill || "N/A";
-        document.getElementById("modalExperience").textContent = data.years_of_experience || "N/A";
-        document.getElementById("modalLicenseNumber").textContent = data.license_number || "N/A";
-        document.getElementById("modalCertification").textContent = data.certification || "N/A";
-        document.getElementById("modalTravelDistance").textContent = data.max_travel_distance || "N/A";
+    document.getElementById("modalFullName").textContent = data.fullName || "N/A";
+    document.getElementById("modalPrimarySkill").textContent = data.primary_skill || "N/A";
+    document.getElementById("modalExperience").textContent = data.years_of_experience || "N/A";
+    document.getElementById("modalLicenseNumber").textContent = data.license_number || "N/A";
+    document.getElementById("modalCertification").textContent = data.certification || "N/A";
+    document.getElementById("modalTravelDistance").textContent = data.max_travel_distance || "N/A";
 
-        const govIdImg = document.getElementById("modalGovernmentID");
-        const selfieImg = document.getElementById("modalSelfie");
+    const govIdImg = document.getElementById("modalGovernmentID");
+    const selfieImg = document.getElementById("modalSelfie");
+    const nbiImg = document.getElementById("modalNbiClearance");
+    const policeImg = document.getElementById("modalPoliceClearance");
 
-        if (data.government_id_url) {
-          govIdImg.src = data.government_id_url;
-          govIdImg.style.display = "block";
-          govIdImg.onload = () => {
-            // Adjust image size if needed
-            if (govIdImg.naturalWidth > 600) {
-              govIdImg.style.width = "100%";
-            }
-          };
+    function displayImage(imgElement, url) {
+        if (url) {
+            imgElement.src = url;
+            imgElement.style.display = "block";
+            imgElement.onload = () => {
+                if (imgElement.naturalWidth > 600) {
+                    imgElement.style.width = "100%";
+                }
+            };
         } else {
-          govIdImg.style.display = "none";
+            imgElement.style.display = "none";
         }
+    }
 
-        if (data.selfie_url) {
-          selfieImg.src = data.selfie_url;
-          selfieImg.style.display = "block";
-          selfieImg.onload = () => {
-            // Adjust image size if needed
-            if (selfieImg.naturalWidth > 600) {
-              selfieImg.style.width = "100%";
-            }
-          };
-        } else {
-          selfieImg.style.display = "none";
-        }
+    displayImage(govIdImg, data.government_id_url);
+    displayImage(selfieImg, data.selfie_url);
+    displayImage(nbiImg, data.nbiClearanceUrl);
+    displayImage(policeImg, data.policeClearanceUrl);
 
-        const modal = document.getElementById("userModal");
-        modal.style.display = "block";
-      }
+    document.getElementById("userModal").style.display = "block";
+}
 
 
 function closeModal() {
